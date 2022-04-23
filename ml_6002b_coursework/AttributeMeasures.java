@@ -28,10 +28,46 @@ public class AttributeMeasures {
             {0,       0,      1,        1},
         };
 
-        double d = measureInformationGain(contingencyTable);
-        d = measureInformationGainRatio(contingencyTable);
-        d = measureGini(contingencyTable);
-        d = measureChiSquared(contingencyTable);
+        int[][] peatyContingencyTable = new int[][] {
+            {1, 0},
+            {1, 0},
+            {1, 0},
+            {1, 0},
+            {0, 0},
+            {0, 1},
+            {0, 1},
+            {0, 1},
+            {0, 1},
+            {0, 1},
+        };
+
+        int[][] exampleTempContingencyTable = new int[][] {
+            {1, 0},
+            {1, 0},
+            {1, 1},
+            {0, 1},
+            {0, 1},
+            {0, 0},
+            {0, 1},
+            {0, 0},
+            {0, 1},
+            {0, 1},
+            {0, 1},
+            {0, 1},
+            {1, 1},
+            {0, 0},
+        };
+
+        double d = 0.0;
+
+        
+
+        d = measureInformationGain(peatyContingencyTable);
+
+// d = measureInformationGain(exampleTempContingencyTable);
+        d = measureInformationGainRatio(peatyContingencyTable);
+        d = measureGini(peatyContingencyTable);
+        d = measureChiSquared(peatyContingencyTable);
 
     }
 
@@ -47,43 +83,75 @@ public class AttributeMeasures {
 
 
         //page 28 of decision trees
-        double maxValue = Double.MIN_VALUE;
-        int count = 0;
-        for (int i = 0; i < contingencyTable.length; i++) {
-            count = 0;
+        //Count the number of 
+        double peaty1_TrueCount  = 0;
+        double peaty1_FalseCount = 0;
+        double peaty2_TrueCount  = 0;
+        double peaty2_FalseCount = 0;
 
-            //Count the number of 
-            for (int index = 0; index < contingencyTable[i].length; index++) {
-                count+= contingencyTable[i][index];
+        int tableSize = contingencyTable.length;
+        for (int index = 0; index < tableSize; index++) {
+            if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 0){
+                peaty1_TrueCount++;
             }
-
-            int attributeChance = count / contingencyTable[0].length;
-
-            if (attributeChance == 1 || attributeChance == 0)
+            else if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 1)
             {
-                return -(Math.log(1)); //=0
+                peaty1_FalseCount++;
             }
-    
-            return -((attributeChance * Math.log(attributeChance)) + ((1-attributeChance) * Math.log((1-attributeChance))));
-            
-    
-            return 0;
+            else if (contingencyTable[index][0] == 0 && contingencyTable[index][1] == 1)
+            {
+                peaty2_TrueCount++;
+            }
+            else if (contingencyTable[index][0] == 0 && contingencyTable[index][1] == 0)
+            {
+                peaty2_FalseCount++;
+            }
 
 
         }
 
+        //If it would otherwise try and log(0), then instead use this base value of 0.0.
+        double hX = 0.0;
+        double h1 = 0.0;
+        double h2 = 0.0;
 
+        //H(X) = - 
+        double totalTrue = peaty1_TrueCount + peaty2_TrueCount;
+        double totalFalse = peaty1_FalseCount + peaty2_FalseCount;
+        hX = -(
+            ( (totalTrue / tableSize) * Math.log(totalTrue / tableSize) / Math.log(2)) +
+            ( (totalFalse/ tableSize) * Math.log(totalFalse/ tableSize) / Math.log(2))
+               );
 
-
-        if (attributeChance == 1 || attributeChance == 0)
-        {
-            return -(Math.log(1));
-        }
-
-        return -((attributeChance * Math.log(attributeChance)) + ((1-attributeChance) * Math.log((1-attributeChance))));
+        //H(1)
+        double peaty1_TrueChance  = peaty1_TrueCount  / (peaty1_TrueCount + peaty1_FalseCount);
+        double peaty1_FalseChance = peaty1_FalseCount / (peaty1_TrueCount + peaty1_FalseCount);
         
+        if ( !(peaty1_TrueChance == 0.0 || peaty1_FalseChance == 0.0 ))
+        {
+            h1 = -(
+                ( (peaty1_TrueChance) * Math.log(peaty1_TrueChance) / Math.log(2)) +
+                ( (peaty1_FalseChance) * Math.log(peaty1_FalseChance) / Math.log(2))
+                );
+        }
 
-        return 0;
+        //H(2)
+        double peaty2_TrueChance  = peaty2_TrueCount  / (peaty2_TrueCount + peaty2_FalseCount);
+        double peaty2_FalseChance = peaty2_FalseCount / (peaty2_TrueCount + peaty2_FalseCount);
+        
+        if ( !(peaty2_TrueChance == 0.0 || peaty2_FalseChance == 0.0 ))
+        {
+            h2 = -(
+                ( (peaty2_TrueChance) * Math.log(peaty2_TrueChance) / Math.log(2)) +
+                ( (peaty2_FalseChance) * Math.log(peaty2_FalseChance) / Math.log(2))
+                );
+        }
+
+        //Gain
+        double peaty1_total = peaty1_TrueCount + peaty1_FalseCount;
+        double peaty2_total = peaty2_TrueCount + peaty2_FalseCount;
+        double gain = hX - ((peaty1_total / tableSize) * h1) - ((peaty2_total / tableSize) * h2);
+        return gain;
     }
 
     private static double measureInformationGainRatio(int[][] contingencyTable) {

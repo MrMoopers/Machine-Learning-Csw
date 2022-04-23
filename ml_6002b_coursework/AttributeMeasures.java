@@ -60,11 +60,13 @@ public class AttributeMeasures {
 
         double d = 0.0;
 
-        
+        // d = measureInformationGain(exampleTempContingencyTable);   //Works
+        // d = measureInformationGainRatio(exampleTempContingencyTable); //Works
+        // d = measureGini(exampleTempContingencyTable);
+        // d = measureChiSquared(exampleTempContingencyTable);
+
 
         d = measureInformationGain(peatyContingencyTable);
-
-// d = measureInformationGain(exampleTempContingencyTable);
         d = measureInformationGainRatio(peatyContingencyTable);
         d = measureGini(peatyContingencyTable);
         d = measureChiSquared(peatyContingencyTable);
@@ -155,7 +157,30 @@ public class AttributeMeasures {
     }
 
     private static double measureInformationGainRatio(int[][] contingencyTable) {
-        return 0;
+
+        double gain = measureInformationGain(contingencyTable);
+
+        double peaty_TrueCount  = 0;
+        double peaty_FalseCount = 0;
+
+        int tableSize = contingencyTable.length;
+        for (int index = 0; index < tableSize; index++) {
+            if (contingencyTable[index][1] == 1){
+                peaty_TrueCount++;
+            }
+            else
+            {
+                peaty_FalseCount++;
+            }
+        }
+
+        double splitInfo = -(
+            ( (peaty_TrueCount / tableSize) * Math.log(peaty_TrueCount / tableSize) / Math.log(2)) +
+            ( (peaty_FalseCount / tableSize) * Math.log(peaty_FalseCount / tableSize) / Math.log(2))
+        );
+
+        double gainRatio = gain / splitInfo;
+        return gainRatio;
     }
 
     private static double measureGini(int[][] contingencyTable) {

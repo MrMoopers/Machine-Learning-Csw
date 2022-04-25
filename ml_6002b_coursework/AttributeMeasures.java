@@ -58,18 +58,40 @@ public class AttributeMeasures {
             {0, 0},
         };
 
+        int[][] exampleHumidContingencyTable = new int[][] {
+            {1, 0},
+            {1, 0},
+            {1, 1},
+            {1, 1},
+            {1, 1},
+            {0, 0},
+            {0, 1},
+            {1, 0},
+            {0, 1},
+            {1, 1},
+            {0, 1},
+            {1, 1},
+            {0, 1},
+            {1, 0},
+        };
+
         double d = 0.0;
 
         // d = measureInformationGain(exampleTempContingencyTable);   //Works
         // d = measureInformationGainRatio(exampleTempContingencyTable); //Works
         // d = measureGini(exampleTempContingencyTable);
+
+        // d = measureInformationGain(exampleHumidContingencyTable);  
+        // d = measureInformationGain(exampleTempContingencyTable);   
+        d = measureChiSquared(exampleHumidContingencyTable);
         // d = measureChiSquared(exampleTempContingencyTable);
 
+        // d = measureInformationGain(peatyContingencyTable);
+        // d = measureInformationGainRatio(peatyContingencyTable);
 
-        d = measureInformationGain(peatyContingencyTable);
-        d = measureInformationGainRatio(peatyContingencyTable);
-        d = measureGini(peatyContingencyTable);
-        d = measureChiSquared(peatyContingencyTable);
+        // d = measureGini(peatyContingencyTable);
+
+        // d = measureChiSquared(peatyContingencyTable);
 
     }
 
@@ -93,10 +115,11 @@ public class AttributeMeasures {
 
         int tableSize = contingencyTable.length;
         for (int index = 0; index < tableSize; index++) {
-            if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 0){
+            //altered
+            if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 1){
                 peaty1_TrueCount++;
             }
-            else if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 1)
+            else if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 0)
             {
                 peaty1_FalseCount++;
             }
@@ -108,6 +131,22 @@ public class AttributeMeasures {
             {
                 peaty2_FalseCount++;
             }
+
+            // if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 0){
+            //     peaty1_TrueCount++;
+            // }
+            // else if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 1)
+            // {
+            //     peaty1_FalseCount++;
+            // }
+            // else if (contingencyTable[index][0] == 0 && contingencyTable[index][1] == 1)
+            // {
+            //     peaty2_TrueCount++;
+            // }
+            // else if (contingencyTable[index][0] == 0 && contingencyTable[index][1] == 0)
+            // {
+            //     peaty2_FalseCount++;
+            // }
 
 
         }
@@ -183,17 +222,58 @@ public class AttributeMeasures {
         return gainRatio;
     }
 
+
+
+    private static double measureChiSquared(int[][] contingencyTable) {
+        double peaty1Positive_observed  = 0;
+        double peaty1Negative_observed = 0;
+        double peaty2Positive_observed  = 0;
+        double peaty2Negative_observed = 0;
+
+        int tableSize = contingencyTable.length;
+        for (int index = 0; index < tableSize; index++) {
+            //altered
+            if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 1){
+                peaty1Positive_observed++;
+            }
+            else if (contingencyTable[index][0] == 1 && contingencyTable[index][1] == 0)
+            {
+                peaty1Negative_observed++;
+            }
+            else if (contingencyTable[index][0] == 0 && contingencyTable[index][1] == 1)
+            {
+                peaty2Positive_observed++;
+            }
+            else if (contingencyTable[index][0] == 0 && contingencyTable[index][1] == 0)
+            {
+                peaty2Negative_observed++;
+            }
+                 
+        }
+
+        double positiveCount = peaty1Positive_observed + peaty2Positive_observed; //top left
+        double negativeCount = peaty1Negative_observed + peaty2Negative_observed;
+        double peaty1_count = peaty1Positive_observed + peaty1Negative_observed;
+        double peaty2_count = peaty2Positive_observed + peaty2Negative_observed;
+
+        double peaty1Positive_expected = peaty1_count * (positiveCount / tableSize); //top left
+        double peaty1Negative_expected = peaty1_count * (negativeCount / tableSize);
+        double peaty2Positive_expected = peaty2_count * (positiveCount / tableSize);
+        double peaty2Negative_expected = peaty2_count * (negativeCount / tableSize);
+
+        double chiSquared = 
+            (Math.pow((peaty1Positive_observed - peaty1Positive_expected), 2) / peaty1Positive_expected) +
+            (Math.pow((peaty1Negative_observed - peaty1Negative_expected), 2) / peaty1Negative_expected) +
+            (Math.pow((peaty2Positive_observed - peaty2Positive_expected), 2) / peaty2Positive_expected) +
+            (Math.pow((peaty2Negative_observed - peaty2Negative_expected), 2) / peaty2Negative_expected);
+
+        return chiSquared;
+    }
+
+
     private static double measureGini(int[][] contingencyTable) {
         return 0;
     }
-
-    private static double measureChiSquared(int[][] contingencyTable) {
-
-        return 0;
-    }
-
-
-
 
 
 

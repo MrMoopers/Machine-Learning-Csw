@@ -6,14 +6,11 @@ import weka.core.Attribute;
 import weka.core.Instances;
 
 
-public class IGAttributeSplitMeasure extends AttributeSplitMeasure {
+public class ChiSquaredAttributeSplitMeasure extends AttributeSplitMeasure {
 
 
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
-        boolean useGain = true;
-        // data.attributeToDoubleArray(0)
-
         //get contingency table
         double[] attrArray = data.attributeToDoubleArray(att.index());
         double[] classArray = data.attributeToDoubleArray(data.classIndex());
@@ -30,12 +27,7 @@ public class IGAttributeSplitMeasure extends AttributeSplitMeasure {
 
         double value = 0.0;
         
-        if (useGain) {
-            value = AttributeMeasures.measureInformationGain(contingencyTable);
-        }
-        else {
-            value = AttributeMeasures.measureInformationGainRatio(contingencyTable);
-        }
+        value = AttributeMeasures.measureChiSquared(contingencyTable);
 
         return value;
     }
@@ -57,9 +49,10 @@ public class IGAttributeSplitMeasure extends AttributeSplitMeasure {
             Attribute attribute = trainingData.attribute(0);
             trainingData.setClassIndex(3);
             
+            ChiSquaredAttributeSplitMeasure chiSquaredAttributeSplitMeasure = new ChiSquaredAttributeSplitMeasure();
+            double d  = chiSquaredAttributeSplitMeasure.computeAttributeQuality(trainingData, attribute);
 
-            IGAttributeSplitMeasure igAttributeSplitMeasure = new IGAttributeSplitMeasure();
-            double d  = igAttributeSplitMeasure.computeAttributeQuality(trainingData, attribute);
+            int a = 0;
 
 
             // CourseworkTree courseworkTree = new CourseworkTree();

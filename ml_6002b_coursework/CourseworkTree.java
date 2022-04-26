@@ -3,6 +3,7 @@ package ml_6002b_coursework;
 import weka.classifiers.AbstractClassifier;
 import weka.core.*;
 
+import java.io.FileReader;
 import java.util.Arrays;
 
 /**
@@ -246,6 +247,44 @@ public class CourseworkTree extends AbstractClassifier {
      * @param args the options for the classifier main
      */
     public static void main(String[] args) {
+
+        // String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
+        // // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
+        // Instances trainingData; 
+        // try{ 
+        //     FileReader reader = new FileReader(dataLocation); 
+        //     trainingData = new Instances(reader); 
+        //     trainingData.setClassIndex(3);
+
+        //     CourseworkTree courseworkTree = new CourseworkTree();
+        //     courseworkTree.buildClassifier(trainingData);
+
+        //     double acc = .0;
+        //     for (Instance testInst : trainingData) {
+        //         double pred = courseworkTree.classifyInstance(testInst);             //aka predict
+        //         //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
+                
+        //         if (pred == testInst.classValue())
+        //             acc++;
+        //     }
+        // }catch(Exception e){ 
+        //     System.out.println("Exception caught: "+e); 
+        // } 
+
+        
+
+
+        
+        // acc /= trainingData.numInstances();
+        // System.out.println("Random Forest accuracy on ItalyPowerDemand: " + acc);
+    
+        // Classifier classifier = ClassifierLists.setClassifierClassic("RandF", seed);
+        // classifier.buildClassifier(train);
+        // classifier.distributionForInstance(test.instance(0));
+        
+        
+
+
         System.out.println("Not Implemented.");
     }
 }

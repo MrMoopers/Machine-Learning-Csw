@@ -11,8 +11,6 @@ public class AttributeMeasures {
      * @param args the options for the attribute measure main
      */
     public static void main(String[] args) {
-        
-
         // Islay --> 0
         // Speyside --> 1
         int[][] contingencyTable = new int[][] {
@@ -122,7 +120,7 @@ public class AttributeMeasures {
 
     }
 
-    private static double measureInformationGain(int[][] contingencyTable) {
+    public static double measureInformationGain(int[][] contingencyTable) {
         // TODO: You can assume that the rows represent different values of the
         // attribute being assessed, and
         // the columns the class counts.
@@ -192,7 +190,7 @@ public class AttributeMeasures {
         return gain;
     }
 
-    private static double measureInformationGainRatio(int[][] contingencyTable) {
+    public static double measureInformationGainRatio(int[][] contingencyTable) {
 
         double gain = measureInformationGain(contingencyTable);
 
@@ -215,7 +213,7 @@ public class AttributeMeasures {
         return gainRatio;
     }
 
-    private static double measureChiSquared(int[][] contingencyTable) {
+    public static double measureChiSquared(int[][] contingencyTable) {
         double peaty1Positive_observed = 0;
         double peaty1Negative_observed = 0;
         double peaty2Positive_observed = 0;
@@ -255,7 +253,7 @@ public class AttributeMeasures {
         return chiSquared;
     }
 
-    private static double measureGini(int[][] contingencyTable) {
+    public static double measureGini(int[][] contingencyTable) {
         double peaty1_TrueCount  = 0;
         double peaty1_FalseCount = 0;
         double peaty2_TrueCount  = 0;

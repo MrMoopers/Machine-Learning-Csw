@@ -8,12 +8,15 @@ import weka.core.Instances;
 
 public class IGAttributeSplitMeasure extends AttributeSplitMeasure {
 
+    //True mean use Infomation Gain. False means use Infomation Gain Ratio.
+    private boolean _useGain = true;
+
+    public void setUseGain(boolean useGain){
+        _useGain = useGain;
+    }
 
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
-        boolean useGain = true;
-        // data.attributeToDoubleArray(0)
-
         //get contingency table
         double[] attrArray = data.attributeToDoubleArray(att.index());
         double[] classArray = data.attributeToDoubleArray(data.classIndex());
@@ -30,7 +33,7 @@ public class IGAttributeSplitMeasure extends AttributeSplitMeasure {
 
         double value = 0.0;
         
-        if (useGain) {
+        if (_useGain) {
             value = AttributeMeasures.measureInformationGain(contingencyTable);
         }
         else {

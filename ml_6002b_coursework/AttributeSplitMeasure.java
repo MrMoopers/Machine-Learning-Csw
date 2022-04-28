@@ -13,6 +13,10 @@ public abstract class AttributeSplitMeasure {
 
     public abstract double computeAttributeQuality(Instances data, Attribute att) throws Exception;
 
+    public void setSplitCriterion(String s){
+
+    }
+
     /**
      * Splits a dataset according to the values of a nominal attribute.
      *

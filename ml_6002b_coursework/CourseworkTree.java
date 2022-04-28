@@ -19,6 +19,27 @@ public class CourseworkTree extends AbstractClassifier {
 
     /** The root node of the tree. */
     private TreeNode root;
+    @Override
+    public void setOptions(String[] options) throws Exception {
+        attSplitMeasure.setSplitCriterion("I Don't Know Yet");
+        // setSplitCriterion(new SelectedTag(Integer.parseInt(opt), TAGS_SELECTION));
+        
+    }
+
+    public CourseworkTree(AttributeSplitMeasure attributeSplitMeasure){
+        setAttSplitMeasure(attributeSplitMeasure);
+    }
+
+    public CourseworkTree(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain){
+        if (useGain){
+            iGAttributeSplitMeasure.setUseGain(true);
+        }
+        else{
+            iGAttributeSplitMeasure.setUseGain(false);
+        }
+
+        setAttSplitMeasure(iGAttributeSplitMeasure);
+    }
 
     /**
      * Sets the attribute split measure for the classifier.
@@ -105,6 +126,9 @@ public class CourseworkTree extends AbstractClassifier {
     public double[] distributionForInstance(Instance instance) {
         return root.distributionForInstance(instance);
     }
+
+
+
 
     /**
      * Class representing a single node in the tree.
@@ -247,29 +271,46 @@ public class CourseworkTree extends AbstractClassifier {
      * @param args the options for the classifier main
      */
     public static void main(String[] args) {
+        int a = 0;
+        try{ 
+            String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
+            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
+            Instances trainingData; 
 
-        // String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
-        // // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
-        // Instances trainingData; 
-        // try{ 
-        //     FileReader reader = new FileReader(dataLocation); 
-        //     trainingData = new Instances(reader); 
-        //     trainingData.setClassIndex(3);
+            FileReader reader = new FileReader(dataLocation); 
+            trainingData = new Instances(reader); 
+            trainingData.setClassIndex(3);
 
-        //     CourseworkTree courseworkTree = new CourseworkTree();
-        //     courseworkTree.buildClassifier(trainingData);
+            AttributeSplitMeasure attributeSplitMeasure;
+            attributeSplitMeasure = new IGAttributeSplitMeasure();
+            attributeSplitMeasure = new IGAttributeSplitMeasure();
+            attributeSplitMeasure = new ChiSquaredAttributeSplitMeasure();
+            attributeSplitMeasure = new GiniAttributeSplitMeasure();
 
-        //     double acc = .0;
-        //     for (Instance testInst : trainingData) {
-        //         double pred = courseworkTree.classifyInstance(testInst);             //aka predict
-        //         //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
+            
+
+
+            CourseworkTree courseworkTree;
+            courseworkTree = new CourseworkTree(new IGAttributeSplitMeasure(), true);
+            courseworkTree = new CourseworkTree(new IGAttributeSplitMeasure()           , false);
+            courseworkTree = new CourseworkTree(new ChiSquaredAttributeSplitMeasure()   );
+            courseworkTree = new CourseworkTree(new GiniAttributeSplitMeasure()         );
+
+            courseworkTree.buildClassifier(trainingData);
+
+            
+
+            double acc = .0;
+            for (Instance testInst : trainingData) {
+                double pred = courseworkTree.classifyInstance(testInst);             //aka predict
+                //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
                 
-        //         if (pred == testInst.classValue())
-        //             acc++;
-        //     }
-        // }catch(Exception e){ 
-        //     System.out.println("Exception caught: "+e); 
-        // } 
+                if (pred == testInst.classValue())
+                    acc++;
+            }
+        }catch(Exception e){ 
+            System.out.println("Exception caught: "+e); 
+        } 
 
         
 

@@ -17,6 +17,10 @@ public abstract class AttributeSplitMeasure {
 
     }
 
+    public void splitDataOnNumeric(double splitValue){
+        
+    }
+
     /**
      * Splits a dataset according to the values of a nominal attribute.
      *

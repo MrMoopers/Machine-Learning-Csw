@@ -12,7 +12,7 @@ public class GiniAttributeSplitMeasure extends AttributeSplitMeasure {
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
         //get contingency table
-        double[] attrArray = data.attributeToDoubleArray(att.index());
+        double[] attrArray = super.splitDataOnNumeric(data, att, 0.5);
         double[] classArray = data.attributeToDoubleArray(data.classIndex());
         int[][] contingencyTable = new int[data.size()][2];
 
@@ -45,30 +45,18 @@ public class GiniAttributeSplitMeasure extends AttributeSplitMeasure {
 
             FileReader reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
-
-            Attribute attribute = trainingData.attribute(0);
-            trainingData.setClassIndex(3);
+            trainingData.setClassIndex(trainingData.numAttributes() - 1);
             
-            GiniAttributeSplitMeasure giniAttributeSplitMeasure = new GiniAttributeSplitMeasure();
-            double d  = giniAttributeSplitMeasure.computeAttributeQuality(trainingData, attribute);
-
-            int a = 0;
-
-            // CourseworkTree courseworkTree = new CourseworkTree();
-            // courseworkTree.buildClassifier(trainingData);
-
-            // double acc = .0;
-            // for (Instance testInst : trainingData) {
-            //     double pred = courseworkTree.classifyInstance(testInst);             //aka predict
-            //     //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
-                
-            //     if (pred == testInst.classValue())
-            //         acc++;
+            for (int i = 0;i<trainingData.numAttributes() - 1;i++){
+                GiniAttributeSplitMeasure giniAttributeSplitMeasure = new GiniAttributeSplitMeasure();
+                double result = giniAttributeSplitMeasure.computeAttributeQuality(trainingData, trainingData.attribute(i));
+    
+                System.out.println("measure Gini for attribute " + trainingData.attribute(i).name() + 
+                " splitting diagnosis = " + result);
+            }
         } catch (Exception e) { 
             System.out.println("Exception caught: "+e); 
         } 
-
-        System.out.println("Not Implemented.");
     }
 
 }

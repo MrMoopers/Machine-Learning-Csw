@@ -13,12 +13,20 @@ public abstract class AttributeSplitMeasure {
 
     public abstract double computeAttributeQuality(Instances data, Attribute att) throws Exception;
 
-    public void setSplitCriterion(String s){
+    public double[] splitDataOnNumeric(Instances data, Attribute att, double splitValue){
+        double[] values = data.attributeToDoubleArray(att.index());
 
-    }
+        for (int i = 0; i < data.numInstances(); i++) {
+            if (values[i] >= splitValue)
+            {
+                values[i] = 1.0;
+            }
+            else{
+                values[i] = 0.0;
+            }
+        }
 
-    public void splitDataOnNumeric(double splitValue){
-        
+        return values;
     }
 
     /**

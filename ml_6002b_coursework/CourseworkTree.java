@@ -1,6 +1,7 @@
 package ml_6002b_coursework;
 
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
 import weka.core.*;
 
 import java.io.FileReader;
@@ -19,27 +20,52 @@ public class CourseworkTree extends AbstractClassifier {
 
     /** The root node of the tree. */
     private TreeNode root;
-    @Override
-    public void setOptions(String[] options) throws Exception {
-        attSplitMeasure.setSplitCriterion("I Don't Know Yet");
-        // setSplitCriterion(new SelectedTag(Integer.parseInt(opt), TAGS_SELECTION));
-        
+
+    public void setOptions(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain) {
+            //should this be a string array somehow?
+            if (useGain){
+                iGAttributeSplitMeasure.setUseGain(true);
+            }
+            else{
+                iGAttributeSplitMeasure.setUseGain(false);
+            }
+
+            setOptions(iGAttributeSplitMeasure);
     }
 
-    public CourseworkTree(AttributeSplitMeasure attributeSplitMeasure){
-        setAttSplitMeasure(attributeSplitMeasure);
+    public void setOptions(AttributeSplitMeasure attributeSplitMeasure) {
+        //should this be a string array somehow?
+        setAttSplitMeasure(attributeSplitMeasure);      
+
+        //set max depth?
+
     }
 
-    public CourseworkTree(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain){
-        if (useGain){
-            iGAttributeSplitMeasure.setUseGain(true);
-        }
-        else{
-            iGAttributeSplitMeasure.setUseGain(false);
-        }
+    public CourseworkTree(){
 
-        setAttSplitMeasure(iGAttributeSplitMeasure);
     }
+
+    // @Override
+    // public void setOptions(String[] options) throws Exception {
+    //     // setSplitCriterion(new SelectedTag(Integer.parseInt(opt), TAGS_SELECTION)); 
+    // or
+    //// classifier.setOptions(Utils.splitOptions("quotedOptionString"))
+    // }
+
+    // public CourseworkTree(AttributeSplitMeasure attributeSplitMeasure){
+    //     setAttSplitMeasure(attributeSplitMeasure);
+    // }
+
+    // public CourseworkTree(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain){
+    //     if (useGain){
+    //         iGAttributeSplitMeasure.setUseGain(true);
+    //     }
+    //     else{
+    //         iGAttributeSplitMeasure.setUseGain(false);
+    //     }
+
+    //     setAttSplitMeasure(iGAttributeSplitMeasure);
+    // }
 
     /**
      * Sets the attribute split measure for the classifier.
@@ -274,27 +300,20 @@ public class CourseworkTree extends AbstractClassifier {
         int a = 0;
         try{ 
             String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
+            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
             // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
             Instances trainingData; 
 
             FileReader reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
-            trainingData.setClassIndex(3);
-
-            AttributeSplitMeasure attributeSplitMeasure;
-            attributeSplitMeasure = new IGAttributeSplitMeasure();
-            attributeSplitMeasure = new IGAttributeSplitMeasure();
-            attributeSplitMeasure = new ChiSquaredAttributeSplitMeasure();
-            attributeSplitMeasure = new GiniAttributeSplitMeasure();
-
-            
-
+            trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
             CourseworkTree courseworkTree;
-            courseworkTree = new CourseworkTree(new IGAttributeSplitMeasure(), true);
-            courseworkTree = new CourseworkTree(new IGAttributeSplitMeasure()           , false);
-            courseworkTree = new CourseworkTree(new ChiSquaredAttributeSplitMeasure()   );
-            courseworkTree = new CourseworkTree(new GiniAttributeSplitMeasure()         );
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new IGAttributeSplitMeasure(), true);
+            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), false);
+            // courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure());
+            // courseworkTree.setOptions(new GiniAttributeSplitMeasure());
 
             courseworkTree.buildClassifier(trainingData);
 

@@ -3,6 +3,9 @@ package ml_6002b_coursework;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.*;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Normalize;
 
 import java.io.FileReader;
 import java.util.Arrays;
@@ -299,34 +302,63 @@ public class CourseworkTree extends AbstractClassifier {
     public static void main(String[] args) {
         int a = 0;
         try{ 
-            String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
-            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
-            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
-            Instances trainingData; 
+            String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
+
+            Instances trainingData;
 
             FileReader reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-            CourseworkTree courseworkTree;
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new IGAttributeSplitMeasure(), true);
-            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), false);
-            // courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure());
-            // courseworkTree.setOptions(new GiniAttributeSplitMeasure());
+            Normalize filter = new Normalize();
+            filter.setInputFormat(trainingData);
+            Instances filteredData;
+            trainingData = Filter.useFilter(trainingData, filter);
 
-            courseworkTree.buildClassifier(trainingData);
+            trainingData.attribute(5);
+
+
+            // DataSource source = new DataSource(dataLocation);
+            // Instances dataset = source.getDataSet();
+            // dataset.setClassIndex(dataset.numAttributes()-1);
+            // /**
+            //  * normalize all the attribute values between 0 and 1
+            //  */
+            
+            // Normalize normalize = new Normalize();
+            // normalize.setInputFormat(dataset);
+            // Instances newdata = Filter.useFilter(dataset, normalize);
+
+
+            int b = 0;
+            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
+            
+            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
+            // Instances trainingData; 
+
+            // FileReader reader = new FileReader(dataLocation); 
+            // trainingData = new Instances(reader); 
+            // trainingData.setClassIndex(trainingData.numAttributes() - 1);
+
+            // CourseworkTree courseworkTree;
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), true);
+            // // courseworkTree.setOptions(new IGAttributeSplitMeasure(), false);
+            // // courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure());
+            // // courseworkTree.setOptions(new GiniAttributeSplitMeasure());
+
+            // courseworkTree.buildClassifier(trainingData);
 
             
 
-            double acc = .0;
-            for (Instance testInst : trainingData) {
-                double pred = courseworkTree.classifyInstance(testInst);             //aka predict
-                //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
+            // double acc = .0;
+            // for (Instance testInst : trainingData) {
+            //     double pred = courseworkTree.classifyInstance(testInst);             //aka predict
+            //     //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
                 
-                if (pred == testInst.classValue())
-                    acc++;
-            }
+            //     if (pred == testInst.classValue())
+            //         acc++;
+            // }
         }catch(Exception e){ 
             System.out.println("Exception caught: "+e); 
         } 

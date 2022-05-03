@@ -12,7 +12,7 @@ public class GiniAttributeSplitMeasure extends AttributeSplitMeasure {
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
         //get contingency table
-        double[] attrArray = super.splitDataOnNumeric(data, att, 0.5);
+        double[] attrArray = super.splitDataOnNumeric(data, att);
         double[] classArray = data.attributeToDoubleArray(data.classIndex());
         int[][] contingencyTable = new int[data.size()][2];
 

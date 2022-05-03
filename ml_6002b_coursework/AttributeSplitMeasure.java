@@ -3,6 +3,8 @@ package ml_6002b_coursework;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Normalize;
 
 import java.util.Enumeration;
 
@@ -13,16 +15,53 @@ public abstract class AttributeSplitMeasure {
 
     public abstract double computeAttributeQuality(Instances data, Attribute att) throws Exception;
 
-    public double[] splitDataOnNumeric(Instances data, Attribute att, double splitValue){
+    //True mean use Infomation Gain. False means use Infomation Gain Ratio.
+    private double _splitValue = 0.5;
+
+    public void setSplitValue(double splitValue){
+        _splitValue = splitValue;
+    }
+
+    public double[] splitDataOnNumeric(Instances data, Attribute att) throws Exception{
         double[] values = data.attributeToDoubleArray(att.index());
 
-        for (int i = 0; i < data.numInstances(); i++) {
-            if (values[i] >= splitValue)
-            {
-                values[i] = 1.0;
+        //Determine the minimum and maximum values within this attributes data.
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (int i = 0; i< values.length; i++)
+        {
+            if (values[i] < min){
+                min = values[i];
             }
-            else{
+            if (values[i] > max){
+                max = values[i];
+            } 
+        }
+
+        //Check that a divide by zero error will not occur. 
+        if ((max - min) == Double.MIN_VALUE)
+        {
+            for (int i = 0; i < data.numInstances(); i++) {
+                //There is only one value in the entire attribute's dataset.
                 values[i] = 0.0;
+            }
+        }
+        else
+        {
+            
+            double normalisedValue = -1;
+            for (int i = 0; i < data.numInstances(); i++) {
+                //Normalise the value between 0.0 and 1.0
+                normalisedValue = values[i] / (max - min);
+
+                //Fit the data values into one of two sets.
+                if (normalisedValue >= _splitValue)
+                {
+                    values[i] = 1.0;
+                }
+                else{
+                    values[i] = 0.0;
+                }
             }
         }
 

@@ -12,7 +12,7 @@ public class ChiSquaredAttributeSplitMeasure extends AttributeSplitMeasure {
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
         //get contingency table
-        double[] attrArray = super.splitDataOnNumeric(data, att, 0.5);
+        double[] attrArray = super.splitDataOnNumeric(data, att);
         double[] classArray = data.attributeToDoubleArray(data.classIndex());
         int[][] contingencyTable = new int[data.size()][2];
 
@@ -45,8 +45,6 @@ public class ChiSquaredAttributeSplitMeasure extends AttributeSplitMeasure {
 
             FileReader reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
-
-            Attribute attribute = trainingData.attribute(0);
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
             
             for (int i = 0;i<trainingData.numAttributes() - 1;i++){
@@ -59,8 +57,6 @@ public class ChiSquaredAttributeSplitMeasure extends AttributeSplitMeasure {
         } catch (Exception e) { 
             System.out.println("Exception caught: "+e); 
         } 
-
-        System.out.println("Not Implemented.");
     }
 
 }

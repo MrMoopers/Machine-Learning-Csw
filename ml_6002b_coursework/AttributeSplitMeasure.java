@@ -52,7 +52,7 @@ public abstract class AttributeSplitMeasure {
             double normalisedValue = -1;
             for (int i = 0; i < data.numInstances(); i++) {
                 //Normalise the value between 0.0 and 1.0
-                normalisedValue = values[i] / (max - min);
+                normalisedValue = (values[i] - min) / (max - min);
 
                 //Fit the data values into one of two sets.
                 if (normalisedValue >= _splitValue)

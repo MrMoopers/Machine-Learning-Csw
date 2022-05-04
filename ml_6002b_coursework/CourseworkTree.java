@@ -9,6 +9,7 @@ import weka.filters.unsupervised.attribute.Normalize;
 
 import java.io.FileReader;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * A basic decision tree classifier for use in machine learning coursework (6002B).
@@ -24,7 +25,7 @@ public class CourseworkTree extends AbstractClassifier {
     /** The root node of the tree. */
     private TreeNode root;
 
-    public void setOptions(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain) {
+    public void setOptions(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain, double splitValue) {
             //should this be a string array somehow?
             if (useGain){
                 iGAttributeSplitMeasure.setUseGain(true);
@@ -33,13 +34,15 @@ public class CourseworkTree extends AbstractClassifier {
                 iGAttributeSplitMeasure.setUseGain(false);
             }
 
-            setOptions(iGAttributeSplitMeasure);
+            setOptions(iGAttributeSplitMeasure, splitValue);
     }
 
-    public void setOptions(AttributeSplitMeasure attributeSplitMeasure) {
+    public void setOptions(AttributeSplitMeasure attributeSplitMeasure, double splitValue) {
         //should this be a string array somehow?
+        attributeSplitMeasure.setSplitValue(splitValue);
         setAttSplitMeasure(attributeSplitMeasure);      
 
+        
         //set max depth?
 
     }
@@ -300,83 +303,80 @@ public class CourseworkTree extends AbstractClassifier {
      * @param args the options for the classifier main
      */
     public static void main(String[] args) {
-        int a = 0;
         try{ 
+            //Generate a 'random split' value between 0 and 1
+            Random random = new Random();
+            double randomSplitValue = random.nextDouble();
+
+            CourseworkTree courseworkTree;
+
+            //#region optdigits
             String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
-
             Instances trainingData;
-
             FileReader reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-            Normalize filter = new Normalize();
-            filter.setInputFormat(trainingData);
-            Instances filteredData;
-            trainingData = Filter.useFilter(trainingData, filter);
+            //Create a new tree and build a classifier for Infomation Gain
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            trainingData.attribute(5);
+            //Create a new tree and build a classifier for Infomation Gain Ratio
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
+            //Create a new tree and build a classifier for Gini
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            // DataSource source = new DataSource(dataLocation);
-            // Instances dataset = source.getDataSet();
-            // dataset.setClassIndex(dataset.numAttributes()-1);
-            // /**
-            //  * normalize all the attribute values between 0 and 1
-            //  */
+            //Create a new tree and build a classifier for Chi-Squared
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            //#endregion
+            System.out.println();
+
+            //#region Chinatown
+            //TODO: Anthony Bagnall code errors with a java.lang.ArrayIndexOutOfBoundsException in AttributeSplitMeasure.java at splitData (ln 85)
             
-            // Normalize normalize = new Normalize();
-            // normalize.setInputFormat(dataset);
-            // Instances newdata = Filter.useFilter(dataset, normalize);
+            dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff";
+            reader = new FileReader(dataLocation); 
+            trainingData = new Instances(reader); 
+            trainingData.setClassIndex(trainingData.numAttributes() - 1);
+            //Create a new tree and build a classifier for Infomation Gain
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
 
+            //Create a new tree and build a classifier for Infomation Gain Ratio
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            int b = 0;
-            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff"; 
-            
-            // String dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff"; 
-            // Instances trainingData; 
+            //Create a new tree and build a classifier for Gini
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Gini on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            // FileReader reader = new FileReader(dataLocation); 
-            // trainingData = new Instances(reader); 
-            // trainingData.setClassIndex(trainingData.numAttributes() - 1);
+            //Create a new tree and build a classifier for Chi-Squared
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Chi-Squared on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
+            //#endregion
 
-            // CourseworkTree courseworkTree;
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), true);
-            // // courseworkTree.setOptions(new IGAttributeSplitMeasure(), false);
-            // // courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure());
-            // // courseworkTree.setOptions(new GiniAttributeSplitMeasure());
-
-            // courseworkTree.buildClassifier(trainingData);
-
-            
-
-            // double acc = .0;
-            // for (Instance testInst : trainingData) {
-            //     double pred = courseworkTree.classifyInstance(testInst);             //aka predict
-            //     //double [] dist = randf.distributionForInstance(testInst); //aka predict_proba
-                
-            //     if (pred == testInst.classValue())
-            //         acc++;
-            // }
         }catch(Exception e){ 
             System.out.println("Exception caught: "+e); 
         } 
-
-        
-
-
-        
-        // acc /= trainingData.numInstances();
-        // System.out.println("Random Forest accuracy on ItalyPowerDemand: " + acc);
-    
-        // Classifier classifier = ClassifierLists.setClassifierClassic("RandF", seed);
-        // classifier.buildClassifier(train);
-        // classifier.distributionForInstance(test.instance(0));
-        
-        
-
-
-        System.out.println("Not Implemented.");
     }
 }

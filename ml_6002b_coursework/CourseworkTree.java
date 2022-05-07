@@ -314,38 +314,41 @@ public class CourseworkTree extends AbstractClassifier {
             String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
             Instances trainingData;
             FileReader reader = new FileReader(dataLocation); 
-            trainingData = new Instances(reader); 
-            trainingData.setClassIndex(trainingData.numAttributes() - 1);
+            // trainingData = new Instances(reader); 
+            // trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-            //Create a new tree and build a classifier for Infomation Gain
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            // //Create a new tree and build a classifier for Infomation Gain
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            //Create a new tree and build a classifier for Infomation Gain Ratio
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            // //Create a new tree and build a classifier for Infomation Gain Ratio
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            //Create a new tree and build a classifier for Gini
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            // //Create a new tree and build a classifier for Gini
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            //Create a new tree and build a classifier for Chi-Squared
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
-            //#endregion
-            System.out.println();
+            // //Create a new tree and build a classifier for Chi-Squared
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            // //#endregion
+            // System.out.println();
 
             //#region Chinatown
             //TODO: Anthony Bagnall code errors with a java.lang.ArrayIndexOutOfBoundsException in AttributeSplitMeasure.java at splitData (ln 85)
             
+            //Could you do this by setting the att.values for each attribute in the data to all the unique values in that column?
+            // Or set that attribute's values to 0 and 1?
+
             dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff";
             reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 

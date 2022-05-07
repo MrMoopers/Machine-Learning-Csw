@@ -81,6 +81,7 @@ public abstract class AttributeSplitMeasure {
             splitData[i] = new Instances(data, data.numInstances());
         }
 
+        //17 in this array which has 2 indexes 
         for (Instance inst: data) {
             splitData[(int) inst.value(att)].add(inst);
         }

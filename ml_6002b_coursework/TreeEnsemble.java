@@ -2,10 +2,13 @@ package ml_6002b_coursework;
 
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
+import java.util.Vector;
 
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
+import weka.core.FastVector;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.RandomSubset;
@@ -34,22 +37,24 @@ public class TreeEnsemble extends AbstractClassifier {
 
         
 
-        // int numberAttributes = (int)(instances.numAttributes() * attributeProportionSelected);
+        int numberAttributes = (int)(instances.numAttributes() * attributeProportionSelected);
 
         RandomSubset randomSubset;
-        Instances instancesSubset;
 
         int classifierChoice;
         Random rand = new Random(7); //TODO: REMOVE USING A SEED
         double randomSplitValue = rand.nextDouble();
+
+
+        Vector<Integer> subset;
+        Vector<Integer>	indices;
         for (int i = 0;i< _treeEnsemble.length;i++) {
 
-
             randomSubset = new RandomSubset();
-            randomSubset.setInputFormat(instances);
             randomSubset.setNumAttributes(attributeProportionSelected);
-            randomSubset.setSeed(rand.nextInt());
-            instancesSubset = Filter.useFilter(instances, randomSubset);
+            randomSubset.setSeed(rand.nextInt(Integer.MAX_VALUE));
+            randomSubset.setInputFormat(instances);
+            Instances instancesSubset = Filter.useFilter(instances, randomSubset);
 
             for (int a = 0;a<instancesSubset.numAttributes();a++){
                 System.out.print(instancesSubset.attribute(a) + ", ");
@@ -78,14 +83,8 @@ public class TreeEnsemble extends AbstractClassifier {
             }
             
             _treeEnsemble[i].buildClassifier(instancesSubset);
-
-
-
-
         }
         
-
-
         for (int i = 0; i<_numTrees;i++){
             // classifiers[i].classifyInstance(instance)
         }

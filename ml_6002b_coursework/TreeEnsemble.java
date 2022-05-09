@@ -9,6 +9,7 @@ import java.util.Vector;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.FastVector;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.RandomSubset;
@@ -23,21 +24,25 @@ public class TreeEnsemble extends AbstractClassifier {
         _classifier = classifier;
     }
 
+    // @Override
+    // public double classifyInstance(Instance instance) throws Exception {
+    //     double[] dist = distributionForInstance(instance);
+    //     return utilities.GenericTools.indexOfMax(dist);
+    // }
+
+    public void majorityVote(Instance instance)  {
+        double x;
+        for (int i = 0; i < _treeEnsemble.length; i++) {
+            //Is always 0? the if statement is always false.
+            x = _treeEnsemble[i].classifyInstance(instance);
+            System.out.println((i + 1) + ") class: = " + x);
+        }
+    }
+
     @Override
     public void buildClassifier(Instances instances) throws Exception {
-        //or if (data.classIndex() != data.numAttributes() - 1?
-        // if (_classifier == null)
-        // {
-        //     throw new Exception("Base classifier not yet implemented");
-        // }
-
         double attributeProportionSelected = 0.5;
-
-        // Classifier[] classifiers = AbstractClassifier.makeCopies(_classifier, _numTrees);
-
-        
-
-        int numberAttributes = (int)(instances.numAttributes() * attributeProportionSelected);
+        int maxDepth = Integer.MAX_VALUE;
 
         RandomSubset randomSubset;
 
@@ -45,21 +50,14 @@ public class TreeEnsemble extends AbstractClassifier {
         Random rand = new Random(7); //TODO: REMOVE USING A SEED
         double randomSplitValue = rand.nextDouble();
 
-
-        Vector<Integer> subset;
-        Vector<Integer>	indices;
         for (int i = 0;i< _treeEnsemble.length;i++) {
-
             randomSubset = new RandomSubset();
             randomSubset.setNumAttributes(attributeProportionSelected);
             randomSubset.setSeed(rand.nextInt(Integer.MAX_VALUE));
             randomSubset.setInputFormat(instances);
             Instances instancesSubset = Filter.useFilter(instances, randomSubset);
 
-            for (int a = 0;a<instancesSubset.numAttributes();a++){
-                System.out.print(instancesSubset.attribute(a) + ", ");
-            }
-            System.out.println(" ");
+            printInstanceSubset(instancesSubset);
             
             classifierChoice = rand.nextInt(4);
             _treeEnsemble[i] = new CourseworkTree();
@@ -81,13 +79,25 @@ public class TreeEnsemble extends AbstractClassifier {
                 default:
                     break;
             }
+
+            //Attribute selection Process & stopping conditions
+            maxDepth = rand.nextInt(Integer.MAX_VALUE);
+            _treeEnsemble[i].setMaxDepth(maxDepth);
             
             _treeEnsemble[i].buildClassifier(instancesSubset);
         }
+
+        //TODO: Which Instance???
+        majorityVote(instances.firstInstance());
         
-        for (int i = 0; i<_numTrees;i++){
-            // classifiers[i].classifyInstance(instance)
+        int a = 0;
+    }
+
+    public void printInstanceSubset(Instances instancesSubset) {
+        for (int a = 0;a<instancesSubset.numAttributes();a++){
+            System.out.print(instancesSubset.attribute(a) + ", ");
         }
+        System.out.println(" ");
     }
 
     public static void main(String[] args) throws Exception {

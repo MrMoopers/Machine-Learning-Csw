@@ -3,6 +3,8 @@ package ml_6002b_coursework;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
 
@@ -31,12 +33,30 @@ public class TreeEnsemble extends AbstractClassifier {
     // }
 
     public void majorityVote(Instance instance)  {
-        double x;
+        // double x;
+        //@ATTRIBUTE class {0,1,2,3,4,5,6,7,8,9}
+        //@attribute  target {1,2}
+        // @ATTRIBUTE class {Islay,Speyside}
+        Map<String, String> map = new HashMap<String, String>();
+
+        // String splitString = instance.classAttribute().toString().split(" ")[2];
+        // String[] values = splitString.substring(1, splitString.length() - 1).split(",");
+        // for (String value : values) {
+
+        //     if (map.get(value))
+
+        //     map.put
+        // }
+
+        double[] classCounters = new double[instance.numClasses()];
         for (int i = 0; i < _treeEnsemble.length; i++) {
             //Is always 0? the if statement is always false.
-            x = _treeEnsemble[i].classifyInstance(instance);
-            System.out.println((i + 1) + ") class: = " + x);
+
+            classCounters[(int)_treeEnsemble[i].classifyInstance(instance)] += 1;
+            
         }
+        // System.out.println((i + 1) + ") class: = " + x);
+        int a = 0;
     }
 
     @Override
@@ -103,7 +123,8 @@ public class TreeEnsemble extends AbstractClassifier {
     public static void main(String[] args) throws Exception {
         TreeEnsemble treeEnsemble = new TreeEnsemble();
 
-        String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff";
+        // String dataLocation="src/main/java/ml_6002b_coursework/test_data/WhiskeyRegion_TRAIN.arff";
+        String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
         FileReader reader = new FileReader(dataLocation); 
         Instances trainingData = new Instances(reader); 
         trainingData.setClassIndex(trainingData.numAttributes() - 1);

@@ -378,6 +378,7 @@ public class CourseworkTree extends AbstractClassifier {
             System.out.println("DT using measure Chi-Squared on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
             //#endregion
 
+            reader.close();
         }catch(Exception e){ 
             System.out.println("Exception caught: "+e); 
         } 

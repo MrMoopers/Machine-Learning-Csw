@@ -82,6 +82,11 @@ public class TreeEnsemble extends AbstractClassifier {
         Random rand = new Random(7); //TODO: REMOVE USING A SEED
         double randomSplitValue = rand.nextDouble();
 
+        String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+        String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+        String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+        String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+
         for (int i = 0;i< _treeEnsemble.length;i++) {
             randomSubset = new RandomSubset();
             randomSubset.setNumAttributes(attributeProportionSelected);
@@ -96,16 +101,16 @@ public class TreeEnsemble extends AbstractClassifier {
 
             switch (classifierChoice) {
                 case 0:
-                _treeEnsemble[i].setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
+                _treeEnsemble[i].setOptions(optionsIGUseGain);
                     break;
                 case 1:
-                _treeEnsemble[i].setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
+                _treeEnsemble[i].setOptions(optionsIG);
                     break;
                 case 2:
-                _treeEnsemble[i].setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
+                _treeEnsemble[i].setOptions(optionsGini);
                     break;
                 case 3:
-                _treeEnsemble[i].setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
+                _treeEnsemble[i].setOptions(optionsChiSquared);
                     break;
             
                 default:

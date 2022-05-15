@@ -15,6 +15,10 @@ public class IGAttributeSplitMeasure extends AttributeSplitMeasure {
         _useGain = useGain;
     }
 
+    public boolean getUseGain(){
+        return _useGain;
+    }
+
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
         //get contingency table

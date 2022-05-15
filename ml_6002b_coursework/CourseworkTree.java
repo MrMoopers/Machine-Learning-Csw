@@ -9,12 +9,15 @@ import weka.filters.unsupervised.attribute.Normalize;
 
 import java.io.FileReader;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Random;
+import java.util.Vector;
 
 /**
  * A basic decision tree classifier for use in machine learning coursework (6002B).
  */
-public class CourseworkTree extends AbstractClassifier {
+public class CourseworkTree extends AbstractClassifier{
 
     /** Measure to use when selecting an attribute to split the data with. */
     private AttributeSplitMeasure attSplitMeasure = new IGAttributeSplitMeasure();
@@ -24,6 +27,213 @@ public class CourseworkTree extends AbstractClassifier {
 
     /** The root node of the tree. */
     private TreeNode root;
+
+    
+  /**
+   * Lists the command-line options for this classifier.
+   * 
+   * @return an enumeration over all possible options
+   */
+  @Override
+  public Enumeration<Option> listOptions() {
+
+    Vector<Option> newVector = new Vector<Option>();
+
+    // newVector.addElement(new Option(
+    //   "\tNumber of attributes to randomly investigate.\t(default 0)\n"
+    //     + "\t(<0 = int(log_2(#predictors)+1)).", "K", 1,
+    //   "-K <number of attributes>"));
+
+    // newVector.addElement(new Option(
+    //   "\tSet minimum number of instances per leaf.\n\t(default 1)", "M", 1,
+    //   "-M <minimum number of instances>"));
+
+    // newVector.addElement(new Option(
+    //   "\tSet minimum numeric class variance proportion\n"
+    //     + "\tof train variance for split (default 1e-3).", "V", 1,
+    //   "-V <minimum variance for split>"));
+
+    // newVector.addElement(new Option("\tSeed for random number generator.\n"
+    //   + "\t(default 1)", "S", 1, "-S <num>"));
+
+    // newVector.addElement(new Option(
+    //   "\tThe maximum depth of the tree, 0 for unlimited.\n" + "\t(default 0)",
+    //   "depth", 1, "-depth <num>"));
+
+    // newVector.addElement(new Option("\tNumber of folds for backfitting "
+    //   + "(default 0, no backfitting).", "N", 1, "-N <num>"));
+    // newVector.addElement(new Option("\tAllow unclassified instances.", "U", 0,
+    //   "-U"));
+    // newVector.addAll(Collections.list(super.listOptions()));
+
+    return newVector.elements();
+  }
+
+  /**
+   * Gets options from this classifier.
+   * 
+   * @return the options for the current setup
+   */
+  @Override
+  public String[] getOptions() {
+    Vector<String> result = new Vector<String>();
+
+    // result.add("-asm"); //AttributeSplitMeasure
+    // result.add("" + this.attSplitMeasure);
+
+    // if ("" + this.attSplitMeasure == "IGAttributeSplitMeasure")
+    // {
+    //     result.add("-U"); //Usegain
+    //     result.add("" + this.attSplitMeasure.getUseGain());
+    // }
+
+
+    // result.add("-S"); //randomSplitValue
+    // result.add("" + randomSplitValue);
+
+
+    // // Collections.addAll(result, super.getOptions());
+    // String[] optionsIG = result.toArray(new String[result.size()]);
+
+    // Collections.addAll(result, super.getOptions());
+
+    return result.toArray(new String[result.size()]);
+  }
+
+  /**
+   * Parses a given list of options.
+   * <p/>
+   * 
+   <!-- options-start -->
+   * Valid options are: <p>
+   * 
+   * <pre> -K &lt;number of attributes&gt;
+   *  Number of attributes to randomly investigate. (default 0)
+   *  (&lt;0 = int(log_2(#predictors)+1)).</pre>
+   * 
+   * <pre> -M &lt;minimum number of instances&gt;
+   *  Set minimum number of instances per leaf.
+   *  (default 1)</pre>
+   * 
+   * <pre> -V &lt;minimum variance for split&gt;
+   *  Set minimum numeric class variance proportion
+   *  of train variance for split (default 1e-3).</pre>
+   * 
+   * <pre> -S &lt;num&gt;
+   *  Seed for random number generator.
+   *  (default 1)</pre>
+   * 
+   * <pre> -depth &lt;num&gt;
+   *  The maximum depth of the tree, 0 for unlimited.
+   *  (default 0)</pre>
+   * 
+   * <pre> -N &lt;num&gt;
+   *  Number of folds for backfitting (default 0, no backfitting).</pre>
+   * 
+   * <pre> -U
+   *  Allow unclassified instances.</pre>
+   * 
+   * <pre> -B
+   *  Break ties randomly when several attributes look equally good.</pre>
+   * 
+   * <pre> -output-debug-info
+   *  If set, classifier is run in debug mode and
+   *  may output additional info to the console</pre>
+   * 
+   * <pre> -do-not-check-capabilities
+   *  If set, classifier capabilities are not checked before classifier is built
+   *  (use with caution).</pre>
+   * 
+   * <pre> -num-decimal-places
+   *  The number of decimal places for the output of numbers in the model (default 2).</pre>
+   * 
+   <!-- options-end -->
+   * 
+   * @param options the list of options as an array of strings
+   * @throws Exception if an option is not supported
+   */
+  @Override
+  public void setOptions(String[] options) throws Exception {
+    String tmpStr;
+
+
+    tmpStr = Utils.getOption("asm", options);
+    if (tmpStr.length() != 0) {
+        switch (tmpStr) {
+            case "IGAttributeSplitMeasure":
+            // ((IGAttributeSplitMeasure) attSplitMeasure).setUseGain(Boolean.parseBoolean(tmpStr));
+                IGAttributeSplitMeasure iGAttributeSplitMeasure = new IGAttributeSplitMeasure();
+
+                tmpStr = Utils.getOption("U", options);
+                if (tmpStr.length() != 0)
+                {
+                    iGAttributeSplitMeasure.setUseGain(Boolean.parseBoolean(tmpStr));
+                }
+
+                setAttSplitMeasure(iGAttributeSplitMeasure);
+
+                break;
+
+            case "GiniAttributeSplitMeasure":
+                setAttSplitMeasure(new GiniAttributeSplitMeasure());
+                break;
+
+            case "ChiSquaredAttributeSplitMeasure":
+                setAttSplitMeasure(new ChiSquaredAttributeSplitMeasure());
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    tmpStr = Utils.getOption("S", options);
+    if (tmpStr.length() != 0)
+    {
+        attSplitMeasure.setSplitValue(Double.parseDouble(tmpStr));
+    }
+
+    tmpStr = Utils.getOption("depth", options);
+    if (tmpStr.length() != 0)
+    {
+        setMaxDepth(Integer.parseInt(tmpStr));
+    }
+
+
+    // tmpStr = Utils.getOption('K', options);
+    // if (tmpStr.length() != 0) {
+    //   m_KValue = Integer.parseInt(tmpStr);
+    // } else {
+    //   m_KValue = 0;
+    // }
+
+    // tmpStr = Utils.getOption('M', options);
+    // if (tmpStr.length() != 0) {
+    //   m_MinNum = Double.parseDouble(tmpStr);
+    // } else {
+    //   m_MinNum = 1;
+    // }
+
+    // tmpStr = Utils.getOption('S', options);
+    // if (tmpStr.length() != 0) {
+    //   setSeed(Integer.parseInt(tmpStr));
+    // } else {
+    //   setSeed(1);
+    // }
+
+    // tmpStr = Utils.getOption("depth", options);
+    // if (tmpStr.length() != 0) {
+    //   setMaxDepth(Integer.parseInt(tmpStr));
+    // } else {
+    //   setMaxDepth(0);
+    // }
+
+    // setAllowUnclassifiedInstances(Utils.getFlag('U', options));
+
+    // super.setOptions(options);
+
+    Utils.checkForRemainingOptions(options);
+  }
 
     public void setOptions(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain, double splitValue) {
             //should this be a string array somehow?
@@ -305,8 +515,14 @@ public class CourseworkTree extends AbstractClassifier {
     public static void main(String[] args) {
         try{ 
             //Generate a 'random split' value between 0 and 1
-            Random random = new Random();
+            Random random = new Random(999);
             double randomSplitValue = random.nextDouble();
+
+            String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+            String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+            String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+            String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+
 
             CourseworkTree courseworkTree;
 
@@ -314,66 +530,71 @@ public class CourseworkTree extends AbstractClassifier {
             String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
             Instances trainingData;
             FileReader reader = new FileReader(dataLocation); 
-            // trainingData = new Instances(reader); 
-            // trainingData.setClassIndex(trainingData.numAttributes() - 1);
+            trainingData = new Instances(reader); 
+            trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-            // //Create a new tree and build a classifier for Infomation Gain
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            //Create a new tree and build a classifier for Infomation Gain
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsIGUseGain);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            // //Create a new tree and build a classifier for Infomation Gain Ratio
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            //Create a new tree and build a classifier for Infomation Gain Ratio
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsIG);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            // //Create a new tree and build a classifier for Gini
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            //Create a new tree and build a classifier for Gini
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsGini);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
 
-            // //Create a new tree and build a classifier for Chi-Squared
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
-            // //#endregion
-            // System.out.println();
+            //Create a new tree and build a classifier for Chi-Squared
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsChiSquared);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            //#endregion
+            System.out.println();
+
+            //Expected:
+            //"DT using measure InfomationGain on optdigits problem has test accuracy = 0.5965943888477512"
+            //"DT using measure InfomationGain on optdigits problem has test accuracy = 1.2585011413741618"
+            //"DT using measure Gini on optdigits problem has test accuracy = 0.9527714554040989"
+            //"DT using measure Chi-Squared on optdigits problem has test accuracy = 7688.223510194523"
 
             //#region Chinatown
             //TODO: Anthony Bagnall code errors with a java.lang.ArrayIndexOutOfBoundsException in AttributeSplitMeasure.java at splitData (ln 85)
             
             //Could you do this by setting the att.values for each attribute in the data to all the unique values in that column?
             // Or set that attribute's values to 0 and 1?
-
             dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff";
             reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
             //Create a new tree and build a classifier for Infomation Gain
             courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new IGAttributeSplitMeasure(), true, randomSplitValue);
+            courseworkTree.setOptions(optionsIGUseGain);
             courseworkTree.buildClassifier(trainingData);
             System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
 
             //Create a new tree and build a classifier for Infomation Gain Ratio
             courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new IGAttributeSplitMeasure(), false, randomSplitValue);
+            courseworkTree.setOptions(optionsIG);
             courseworkTree.buildClassifier(trainingData);
             System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
 
             //Create a new tree and build a classifier for Gini
             courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new GiniAttributeSplitMeasure(), randomSplitValue);
+            courseworkTree.setOptions(optionsGini);
             courseworkTree.buildClassifier(trainingData);
             System.out.println("DT using measure Gini on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
 
             //Create a new tree and build a classifier for Chi-Squared
             courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(new ChiSquaredAttributeSplitMeasure(), randomSplitValue);
+            courseworkTree.setOptions(optionsChiSquared);
             courseworkTree.buildClassifier(trainingData);
             System.out.println("DT using measure Chi-Squared on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
             //#endregion

@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
+import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -26,7 +27,7 @@ public class TreeEnsemble extends AbstractClassifier {
         _classifier = classifier;
     }
 
-    public double majorityVote(Instance instance)  {
+    public double[] majorityVote(Instance instance)  {
         double[] classCounters = new double[instance.numClasses()];
         for (int i = 0; i < _treeEnsemble.length; i++) {
             //Is always 0? the if statement is always false.
@@ -34,18 +35,7 @@ public class TreeEnsemble extends AbstractClassifier {
             classCounters[predictedClassIndex]+=1;
         }
 
-        double largestClassCounter = -1;
-        double largestClassCounterIndex = -1;
-        for (int i = 0;i<classCounters.length; i++)
-        {
-            if (classCounters[i] > largestClassCounter)
-            {
-                largestClassCounter = classCounters[i];
-                largestClassCounterIndex = i;
-            }
-        }
-
-        return largestClassCounterIndex;
+        return classCounters;
     }
 
     @Override
@@ -106,7 +96,32 @@ public class TreeEnsemble extends AbstractClassifier {
     @Override
     public double classifyInstance(Instance instance) throws Exception {
         //Despite being a double, this is the index of the class.
-        return majorityVote(instance);
+        double[] classCounters = majorityVote(instance);
+        double largestClassCounter = -1;
+        double largestClassCounterIndex = -1;
+        for (int i = 0;i<classCounters.length; i++)
+        {
+            if (classCounters[i] > largestClassCounter)
+            {
+                largestClassCounter = classCounters[i];
+                largestClassCounterIndex = i;
+            }
+        }
+
+        return largestClassCounterIndex;
+    }
+
+    @Override
+    public double[] distributionForInstance(Instance instance) throws Exception {
+        double[] classCounters = majorityVote(instance);
+        double[] classProportions = new double[classCounters.length] ;
+
+        for (int i = 0;i<classCounters.length;i++)
+        {
+            classProportions[i] = classCounters[i] / (double)_numTrees;
+        }
+
+        return classProportions;
     }
 
     public void printInstanceSubset(Instances instancesSubset) {
@@ -127,7 +142,10 @@ public class TreeEnsemble extends AbstractClassifier {
 
         treeEnsemble.buildClassifier(trainingData);
 
-        double classIndex = treeEnsemble.classifyInstance(trainingData.firstInstance());
+        double majorityVoteAttributeIndex = treeEnsemble.classifyInstance(trainingData.firstInstance());
+        Attribute majorityVoteAttribute = trainingData.attribute((int)majorityVoteAttributeIndex);
+
+        double[] voteProportions = treeEnsemble.distributionForInstance(trainingData.firstInstance());
 
         int a = 0;
     }

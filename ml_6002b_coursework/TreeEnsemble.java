@@ -26,39 +26,16 @@ public class TreeEnsemble extends AbstractClassifier {
         _classifier = classifier;
     }
 
-    // @Override
-    // public double classifyInstance(Instance instance) throws Exception {
-    //     double[] dist = distributionForInstance(instance);
-    //     return utilities.GenericTools.indexOfMax(dist);
-    // }
-
-    public int majorityVote(Instance instance)  {
-        // double x;
-        //@ATTRIBUTE class {0,1,2,3,4,5,6,7,8,9}
-        //@attribute  target {1,2}
-        // @ATTRIBUTE class {Islay,Speyside}
-        // Map<String, String> classVotes = new HashMap<String, String>();
-
-        // String splitString = instance.classAttribute().toString().split(" ")[2];
-        // String[] values = splitString.substring(1, splitString.length() - 1).split(",");
-        // for (String value : values) {
-
-        //     if (map.get(value))
-
-        //     map.put
-        // }
-
-         // argmax()
-
-        int[] classCounters = new int[instance.numClasses()];
+    public double majorityVote(Instance instance)  {
+        double[] classCounters = new double[instance.numClasses()];
         for (int i = 0; i < _treeEnsemble.length; i++) {
             //Is always 0? the if statement is always false.
-            int predLabelId = (int)_treeEnsemble[i].classifyInstance(instance);
-            classCounters[predLabelId]+=1;
+            int predictedClassIndex = (int)_treeEnsemble[i].classifyInstance(instance);
+            classCounters[predictedClassIndex]+=1;
         }
 
-        int largestClassCounter = -1;
-        int largestClassCounterIndex = -1;
+        double largestClassCounter = -1;
+        double largestClassCounterIndex = -1;
         for (int i = 0;i<classCounters.length; i++)
         {
             if (classCounters[i] > largestClassCounter)
@@ -73,28 +50,33 @@ public class TreeEnsemble extends AbstractClassifier {
 
     @Override
     public void buildClassifier(Instances instances) throws Exception {
+        Random rand = new Random(1); //TODO: REMOVE USING A SEED
+
         double attributeProportionSelected = 0.5;
+
+        //Attribute selection Process & stopping conditions
         int maxDepth = Integer.MAX_VALUE;
+        maxDepth = rand.nextInt(Integer.MAX_VALUE);
+        double randomSplitValue = rand.nextDouble();
 
         RandomSubset randomSubset;
 
         int classifierChoice;
-        Random rand = new Random(7); //TODO: REMOVE USING A SEED
-        double randomSplitValue = rand.nextDouble();
 
-        String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
-        String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
-        String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
-        String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+        String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + maxDepth};
+        String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + maxDepth};
+        String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + maxDepth};
+        String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + maxDepth};
 
         for (int i = 0;i< _treeEnsemble.length;i++) {
             randomSubset = new RandomSubset();
             randomSubset.setNumAttributes(attributeProportionSelected);
-            randomSubset.setSeed(rand.nextInt(Integer.MAX_VALUE));
+            randomSubset.setSeed(2);//TODO: Remove this
+            // randomSubset.setSeed(rand.nextInt(Integer.MAX_VALUE));
             randomSubset.setInputFormat(instances);
             Instances instancesSubset = Filter.useFilter(instances, randomSubset);
 
-            printInstanceSubset(instancesSubset);
+            // printInstanceSubset(instancesSubset);//Evidence of Testing
             
             classifierChoice = rand.nextInt(4);
             _treeEnsemble[i] = new CourseworkTree();
@@ -117,17 +99,14 @@ public class TreeEnsemble extends AbstractClassifier {
                     break;
             }
 
-            //Attribute selection Process & stopping conditions
-            maxDepth = rand.nextInt(Integer.MAX_VALUE);
-            _treeEnsemble[i].setMaxDepth(maxDepth);
-            
             _treeEnsemble[i].buildClassifier(instancesSubset);
         }
+    }
 
-        //TODO: Which Instance???
-        int votedClassIndex = majorityVote(instances.firstInstance());
-        
-        int a = 0;
+    @Override
+    public double classifyInstance(Instance instance) throws Exception {
+        //Despite being a double, this is the index of the class.
+        return majorityVote(instance);
     }
 
     public void printInstanceSubset(Instances instancesSubset) {
@@ -147,6 +126,10 @@ public class TreeEnsemble extends AbstractClassifier {
         trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
         treeEnsemble.buildClassifier(trainingData);
+
+        double classIndex = treeEnsemble.classifyInstance(trainingData.firstInstance());
+
+        int a = 0;
     }
 
 }

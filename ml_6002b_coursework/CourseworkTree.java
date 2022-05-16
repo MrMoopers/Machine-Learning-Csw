@@ -6,6 +6,7 @@ import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Normalize;
+import weka.filters.unsupervised.attribute.NumericToBinary;
 
 import java.io.FileReader;
 import java.util.Arrays;
@@ -555,18 +556,20 @@ public class CourseworkTree extends AbstractClassifier{
             Random random = new Random(999);
             double randomSplitValue = random.nextDouble();
 
-            String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
-            String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
-            String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
-            String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
+            String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "-A", "" + false};
+            String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "-A", "" + false};
+            String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "-A", "" + false};
+            String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "-A", "" + false};
 
 
             CourseworkTree courseworkTree;
+            String dataLocation;
+            Instances trainingData;
+            FileReader reader;
 
             //#region optdigits
-            String dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
-            Instances trainingData;
-            FileReader reader = new FileReader(dataLocation); 
+            dataLocation="src/main/java/ml_6002b_coursework/test_data/optdigits.arff";
+            reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
@@ -574,26 +577,26 @@ public class CourseworkTree extends AbstractClassifier{
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsIGUseGain);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            System.out.println("DT using measure InfomationGain (UseGain) on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
-            //Create a new tree and build a classifier for Infomation Gain Ratio
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(optionsIG);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            // //Create a new tree and build a classifier for Infomation Gain Ratio
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(optionsIG);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
-            //Create a new tree and build a classifier for Gini
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(optionsGini);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            // //Create a new tree and build a classifier for Gini
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(optionsGini);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
-            //Create a new tree and build a classifier for Chi-Squared
-            courseworkTree = new CourseworkTree();
-            courseworkTree.setOptions(optionsChiSquared);
-            courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
-            //#endregion
+            // //Create a new tree and build a classifier for Chi-Squared
+            // courseworkTree = new CourseworkTree();
+            // courseworkTree.setOptions(optionsChiSquared);
+            // courseworkTree.buildClassifier(trainingData);
+            // System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            // //#endregion
             System.out.println();
 
             //Expected:
@@ -610,12 +613,17 @@ public class CourseworkTree extends AbstractClassifier{
             dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff";
             reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
+            
+            NumericToBinary numericToBinary = new NumericToBinary();
+            numericToBinary.setInputFormat(trainingData);
+            trainingData = Filter.useFilter(trainingData, numericToBinary);
+
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
             //Create a new tree and build a classifier for Infomation Gain
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsIGUseGain);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.getRootBestGain());
+            System.out.println("DT using measure InfomationGain (UseGain) on Chinatown problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Infomation Gain Ratio
             courseworkTree = new CourseworkTree();

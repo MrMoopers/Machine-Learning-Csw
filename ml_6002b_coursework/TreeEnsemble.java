@@ -16,6 +16,7 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToBinary;
 import weka.filters.unsupervised.attribute.RandomSubset;
 
 public class TreeEnsemble extends AbstractClassifier {
@@ -203,6 +204,11 @@ public class TreeEnsemble extends AbstractClassifier {
             dataLocation="src/main/java/ml_6002b_coursework/test_data/Chinatown.arff";
             reader = new FileReader(dataLocation); 
             trainingData = new Instances(reader); 
+
+            NumericToBinary numericToBinary = new NumericToBinary();
+            numericToBinary.setInputFormat(trainingData);
+            trainingData = Filter.useFilter(trainingData, numericToBinary);
+
             trainingData.setClassIndex(trainingData.numAttributes() - 1);
     
             treeEnsemble.setOptions(options.get(i));

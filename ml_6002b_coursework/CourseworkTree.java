@@ -27,8 +27,13 @@ public class CourseworkTree extends AbstractClassifier{
 
     /** The root node of the tree. */
     private TreeNode root;
-
     
+    private boolean isAverageProbabilities = false;
+
+    public double getRootBestGain(){
+        return root.getBestGain();
+    }
+
   /**
    * Lists the command-line options for this classifier.
    * 
@@ -199,6 +204,11 @@ public class CourseworkTree extends AbstractClassifier{
         setMaxDepth(Integer.parseInt(tmpStr));
     }
 
+    tmpStr = Utils.getOption("A", options);
+    if (tmpStr.length() != 0)
+    {
+        setIsAverageProbabilities(Boolean.parseBoolean(tmpStr));
+    }
 
     // tmpStr = Utils.getOption('K', options);
     // if (tmpStr.length() != 0) {
@@ -235,27 +245,27 @@ public class CourseworkTree extends AbstractClassifier{
     Utils.checkForRemainingOptions(options);
   }
 
-    public void setOptions(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain, double splitValue) {
-            //should this be a string array somehow?
-            if (useGain){
-                iGAttributeSplitMeasure.setUseGain(true);
-            }
-            else{
-                iGAttributeSplitMeasure.setUseGain(false);
-            }
+    // public void setOptions(IGAttributeSplitMeasure iGAttributeSplitMeasure, boolean useGain, double splitValue) {
+    //         //should this be a string array somehow?
+    //         if (useGain){
+    //             iGAttributeSplitMeasure.setUseGain(true);
+    //         }
+    //         else{
+    //             iGAttributeSplitMeasure.setUseGain(false);
+    //         }
 
-            setOptions(iGAttributeSplitMeasure, splitValue);
-    }
+    //         setOptions(iGAttributeSplitMeasure, splitValue);
+    // }
 
-    public void setOptions(AttributeSplitMeasure attributeSplitMeasure, double splitValue) {
-        //should this be a string array somehow?
-        attributeSplitMeasure.setSplitValue(splitValue);
-        setAttSplitMeasure(attributeSplitMeasure);      
+    // public void setOptions(AttributeSplitMeasure attributeSplitMeasure, double splitValue) {
+    //     //should this be a string array somehow?
+    //     attributeSplitMeasure.setSplitValue(splitValue);
+    //     setAttSplitMeasure(attributeSplitMeasure);      
 
         
-        //set max depth?
+    //     //set max depth?
 
-    }
+    // }
 
     public CourseworkTree(){
 
@@ -301,6 +311,14 @@ public class CourseworkTree extends AbstractClassifier{
         this.maxDepth = maxDepth;
     }
 
+        /**
+     * Sets the max depth for the classifier.
+     *
+     * @param maxDepth the max depth
+     */
+    public void setIsAverageProbabilities(boolean isAverageProbabilities){
+        this.isAverageProbabilities = isAverageProbabilities;
+    }
     /**
      * Returns default capabilities of the classifier.
      *
@@ -348,14 +366,28 @@ public class CourseworkTree extends AbstractClassifier{
     public double classifyInstance(Instance instance) {
         double[] probs = distributionForInstance(instance);
 
-        int maxClass = 0;
-        for (int n = 1; n < probs.length; n++) {
-            if (probs[n] > probs[maxClass]) {
-                maxClass = n;
+        if (!isAverageProbabilities)
+        {
+            int maxClass = 0;
+            for (int n = 1; n < probs.length; n++) {
+                if (probs[n] > probs[maxClass]) {
+                    maxClass = n;
+                }
             }
+
+            return maxClass;
+        }
+        else
+        {
+            double sumOfClassProbs = 0;
+            for (int i = 0;i<probs.length;i++)
+            {
+                sumOfClassProbs += probs[i];
+            }
+            return sumOfClassProbs / probs.length;
+
         }
 
-        return maxClass;
     }
 
     /**
@@ -391,6 +423,11 @@ public class CourseworkTree extends AbstractClassifier{
 
         /** The class distribution if the node is a leaf. */
         double[] leafDistribution;
+
+        public double getBestGain()
+        {
+            return bestGain;
+        }
 
         /**
          * Recursive function for building the tree.
@@ -518,10 +555,10 @@ public class CourseworkTree extends AbstractClassifier{
             Random random = new Random(999);
             double randomSplitValue = random.nextDouble();
 
-            String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
-            String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
-            String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
-            String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE};
+            String[] optionsIGUseGain = {"-asm", "IGAttributeSplitMeasure", "-U", "" + true, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
+            String[] optionsIG = {"-asm", "IGAttributeSplitMeasure", "-U", "" + false, "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
+            String[] optionsGini = {"-asm", "GiniAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
+            String[] optionsChiSquared = {"-asm", "ChiSquaredAttributeSplitMeasure", "-S", "" + randomSplitValue, "-depth", "" + Integer.MAX_VALUE, "a", "" + false};
 
 
             CourseworkTree courseworkTree;
@@ -537,25 +574,25 @@ public class CourseworkTree extends AbstractClassifier{
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsIGUseGain);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Infomation Gain Ratio
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsIG);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Gini
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsGini);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Chi-Squared
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsChiSquared);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
             //#endregion
             System.out.println();
 
@@ -578,25 +615,25 @@ public class CourseworkTree extends AbstractClassifier{
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsIGUseGain);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Infomation Gain Ratio
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsIG);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure InfomationGain on Chinatown problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Gini
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsGini);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Gini on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure Gini on Chinatown problem has test accuracy = " + courseworkTree.getRootBestGain());
 
             //Create a new tree and build a classifier for Chi-Squared
             courseworkTree = new CourseworkTree();
             courseworkTree.setOptions(optionsChiSquared);
             courseworkTree.buildClassifier(trainingData);
-            System.out.println("DT using measure Chi-Squared on Chinatown problem has test accuracy = " + courseworkTree.root.bestGain);
+            System.out.println("DT using measure Chi-Squared on Chinatown problem has test accuracy = " + courseworkTree.getRootBestGain());
             //#endregion
 
             reader.close();

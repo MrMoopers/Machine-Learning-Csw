@@ -166,6 +166,10 @@ public class DatasetLists {
         // }
         // //#endregion
 
+        // System.out.println("AttributeCount="+testData.numAttributes());
+        // System.out.println("InstanceCount="+testData.numInstances());
+        // System.out.println("ClassCount="+testData.classAttribute().numValues());
+
        //#region CourseworkTree
        System.out.println("nominalAttributeProblems))");
        for (int i = 0;i<nominalAttributeProblems.length;i++)
@@ -177,24 +181,30 @@ public class DatasetLists {
                testData = new Instances(trainingData); 
                testData.setClassIndex(testData.numAttributes() - 1);
 
+        //        System.out.println(nominalAttributeProblems[i]);
+        //        System.out.println(testData.numAttributes());
+        //        System.out.println(testData.numInstances());
+        //        System.out.println(testData.classAttribute().numValues());
+        //        System.out.println();
 
-               id3 = new Id3();
+        //        id3 = new Id3();
 
-               //Create a new tree and build a classifier for Infomation Gain
-               String[] optionsID3 = {"-D", "" + false};
+        //        //Create a new tree and build a classifier for Infomation Gain
+        //        String[] optionsID3 = {"-D", "" + false};
                
-               id3.setOptions(optionsID3);
-               id3.buildClassifier(trainingData);
-               id3.classifyInstance(testData.firstInstance());
-               System.out.println("id3|("+nominalAttributeProblems[i]+")|accuracy = " + id3.toString());
+        //        id3.setOptions(optionsID3);
+        //        id3.buildClassifier(trainingData);
+        //        id3.classifyInstance(testData.firstInstance());
+        //        System.out.println("id3|("+nominalAttributeProblems[i]+")|accuracy = " + id3.toString());
 
-               System.out.println("");
+        //        System.out.println("");
        }
+       System.out.println("");
 
        System.out.println("continuousAttributeProblems))");
        for (int i = 0;i<continuousAttributeProblems.length;i++)
        {
-               dataLocation="src/main/java/ml_6002b_coursework/evaluation_test_data/UCI Discrete/"+ continuousAttributeProblems[i] + "/" +continuousAttributeProblems[i] + ".arff";
+               dataLocation="src/main/java/ml_6002b_coursework/evaluation_test_data/UCI Continuous/"+ continuousAttributeProblems[i] + "/" +continuousAttributeProblems[i] + ".arff";
                reader = new FileReader(dataLocation); 
                trainingData = new Instances(reader); 
                trainingData.setClassIndex(trainingData.numAttributes() - 1);
@@ -202,17 +212,23 @@ public class DatasetLists {
                testData.setClassIndex(testData.numAttributes() - 1);
 
 
-               id3 = new Id3();
-               
-               //Create a new tree and build a classifier for Infomation Gain
-               String[] optionsID3 = {"-D", "" + false};
-               
-               id3.setOptions(optionsID3);
-               id3.buildClassifier(trainingData);
-               id3.classifyInstance(testData.firstInstance());
-               System.out.println("id3|("+continuousAttributeProblems[i]+")|accuracy = " + id3.toString());
+               System.out.println(continuousAttributeProblems[i]);
+               System.out.println(testData.numAttributes());
+               System.out.println(testData.numInstances());
+               System.out.println(testData.classAttribute().numValues());
+               System.out.println();
 
-               System.out.println("");
+        //        id3 = new Id3();
+               
+        //        //Create a new tree and build a classifier for Infomation Gain
+        //        String[] optionsID3 = {"-D", "" + false};
+               
+        //        id3.setOptions(optionsID3);
+        //        id3.buildClassifier(trainingData);
+        //        id3.classifyInstance(testData.firstInstance());
+        //        System.out.println("id3|("+continuousAttributeProblems[i]+")|accuracy = " + id3.toString());
+
+        //        System.out.println("");
        }
 
 //        System.out.println("");

@@ -93,4 +93,21 @@ public abstract class AttributeSplitMeasure {
         return splitData;
     }
 
+    // private Instances[] splitData(Instances data, Attribute att) {
+
+    //     Instances[] splitData = new Instances[att.numValues()];
+    //     for (int j = 0; j < att.numValues(); j++) {
+    //       splitData[j] = new Instances(data, data.numInstances());
+    //     }
+    //     Enumeration instEnum = data.enumerateInstances();
+    //     while (instEnum.hasMoreElements()) {
+    //       Instance inst = (Instance) instEnum.nextElement();
+    //       splitData[(int) inst.value(att)].add(inst);
+    //     }
+    //     for (int i = 0; i < splitData.length; i++) {
+    //       splitData[i].compactify();
+    //     }
+    //     return splitData;
+    //   }
+
 }

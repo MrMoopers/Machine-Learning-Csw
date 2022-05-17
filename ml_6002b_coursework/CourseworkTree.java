@@ -579,24 +579,24 @@ public class CourseworkTree extends AbstractClassifier{
             courseworkTree.buildClassifier(trainingData);
             System.out.println("DT using measure InfomationGain (UseGain) on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
-            // //Create a new tree and build a classifier for Infomation Gain Ratio
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(optionsIG);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            //Create a new tree and build a classifier for Infomation Gain Ratio
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsIG);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure InfomationGain on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
-            // //Create a new tree and build a classifier for Gini
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(optionsGini);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            //Create a new tree and build a classifier for Gini
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsGini);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
 
-            // //Create a new tree and build a classifier for Chi-Squared
-            // courseworkTree = new CourseworkTree();
-            // courseworkTree.setOptions(optionsChiSquared);
-            // courseworkTree.buildClassifier(trainingData);
-            // System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
-            // //#endregion
+            //Create a new tree and build a classifier for Chi-Squared
+            courseworkTree = new CourseworkTree();
+            courseworkTree.setOptions(optionsChiSquared);
+            courseworkTree.buildClassifier(trainingData);
+            System.out.println("DT using measure Chi-Squared on optdigits problem has test accuracy = " + courseworkTree.getRootBestGain());
+            //#endregion
             System.out.println();
 
             //Expected:
